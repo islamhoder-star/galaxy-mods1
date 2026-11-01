@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سحب الأرباح - Withdraw</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: center; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #d35400; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
+        .menu-btn { background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
+        .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
+        .side-menu a { padding: 12px 25px; text-decoration: none; font-size: 20px; color: white; display: block; transition: 0.2s; }
+        .side-menu a:hover { background-color: #34495e; color: #f1c40f; }
+        .side-menu .close-btn { position: absolute; top: 10px; left: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .bottom-nav a { color: #bdc3c7; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .bottom-nav a span.icon { font-size: 18px; margin-bottom: 2px; }
+        .bottom-nav a:hover, .bottom-nav a.active { color: #f1c40f; }
+
+        .container { padding: 25px; max-width: 500px; margin: auto; background: white; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: right; }
+        .stats-box { background: #ecf0f1; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: center; }
+        .stats-box h3 { margin: 5px 0; color: #2c3e50; }
+        .stats-box p { margin: 0; color: #7f8c8d; font-size: 14px; }
+        
+        .admin-notice-box { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; font-size: 13px; margin-bottom: 15px; border: 1px solid #c3e6cb; text-align: center; display: none; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .withdraw-btn { background: #27ae60; color: white; border: none; padding: 12px 20px; width: 100%; font-size: 18px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .withdraw-btn:hover { background: #219653; }
+        
+        .status-footer-box { margin-top: 20px; padding: 15px; border-radius: 6px; text-align: center; display: none; font-size: 14px; }
+        .pending-state { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .paid-state { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+    <header><span>سحب الأرباح (Withdraw)</span><button class="menu-btn" onclick="openMenu()">☰</button></header>
+    <div id="mySideMenu" class="side-menu">
+        <button class="close-btn" onclick="closeMenu()">&times;</button>
+        <a href="index.html">الرئيسية (Home)</a>
+        <a href="apps.html">التطبيقات (Apps)</a>
+        <a href="games.html">الألعاب (Games)</a>
+        <a href="upload.html">رفع ملف (Upload)</a>
+        <a href="withdraw.html">سحب الأرباح (Withdraw)</a>
+        <a href="about.html">عن الموقع (About Me)</a>
+    </div>
+    <div class="container">
+        <h2>نظام المكافآت والأرباح</h2>
+        <p style="font-size: 13px; color: #666;">كل 1000 نقطة تساوي <strong>$2.5</strong>.<br>الحد الأدنى للسحب: <strong>$2.5</strong> | الحد الأقصى: <strong>$1000</strong>.</p>
+        
+        <div id="adminNotice" class="admin-notice-box"></div>
+
+        <div class="stats-box">
+            <p>نقاطك الحالية: <strong id="pointsCount">0</strong> نقطة</p>
+            <h3>رصيدك الحالي: <span id="balanceAmount" style="color: #e74c3c;">$0.00</span></h3>
+            <p id="statusMsg" style="font-size: 12px; color: #e67e22; margin-top: 5px;">تحتاج إلى 1000 نقطة ($2.5) للسحب.</p>
+        </div>
+
+        <form onsubmit="handleWithdraw(event)">
+            <div class="form-group"><label>معرف بينانس (Binance Pay ID / Email): *</label><input type="text" id="binanceId" placeholder="أدخل بريد أو معرف بينانس الخاص بك..." required></div>
+            <div class="form-group"><label>المبلغ المراد سحبه ($): *</label><input type="number" id="amount" step="0.0001" value="0.00" min="2.5" max="1000" required></div>
+            <button type="submit" id="submitBtn" class="withdraw-btn" style="background: #95a5a6; cursor: not-allowed;" disabled>طلب سحب عبر بينانس (غير متاح)</button>
+        </form>
+
+        <div id="statusFooter" class="status-footer-box">
+            <p id="footerText" style="margin: 0; font-weight: bold;"></p>
+        </div>
+    </div>
+    
+    <nav class="bottom-nav">
+        <a href="index.html"><span class="icon">🏠</span>الرئيسية</a>
+        <a href="games.html"><span class="icon">🎮</span>الألعاب</a>
+        <a href="apps.html"><span class="icon">📱</span>التطبيقات</a>
+        <a href="upload.html"><span class="icon">📤</span>رفع</a>
+        <a href="withdraw.html" class="active"><span class="icon">💰</span>سحب</a>
+    </nav>
+    <script>
+        function openMenu() { document.getElementById("mySideMenu").style.width = "250px"; }
+        function closeMenu() { document.getElementById("mySideMenu").style.width = "0"; }
+
+        let userIP = localStorage.getItem("mySimulatedIP") || "192.168.1.10";
+        let visitors = JSON.parse(localStorage.getItem("siteVisitors")) || {};
+        let currentUser = visitors[userIP] || { points: 0, downloads: 0 };
+
+        if (currentUser.adminNotice) {
+            let noticeBox = document.getElementById("adminNotice");
+            noticeBox.style.display = "block";
+            noticeBox.innerHTML = `🔔 <strong>تنبيه من الإدارة:</strong> ${currentUser.adminNotice}`;
+        }
+
+        function checkOrderStatus() {
+            let withdraws = JSON.parse(localStorage.getItem("adminWithdraws")) || [];
+            let userWithdraw = withdraws.find(w => w.ip === userIP);
+            let footer = document.getElementById("statusFooter");
+            let footerText = document.getElementById("footerText");
+
+            if (userWithdraw) {
+                footer.style.display = "block";
+                if (userWithdraw.status === "paid") {
+                    footer.className = "status-footer-box paid-state";
+                    footerText.innerHTML = `✅ تم دفع الأرباح بنجاح لك!<br>معرف بينانس: <code>${userWithdraw.binanceId}</code> | المبلغ: $${userWithdraw.amount}`;
+                } else {
+                    footer.className = "status-footer-box pending-state";
+                    footerText.innerHTML = `⏳ جاري معالجة طلبك...<br>معرف بينانس: <code>${userWithdraw.binanceId}</code> | المبلغ: $${userWithdraw.amount}`;
+                }
+            }
+        }
+
+        let points = currentUser.points || 0;
+        let calculatedBalance = points * 0.0025;
+
+        document.getElementById("pointsCount").innerText = points.toLocaleString();
+        document.getElementById("balanceAmount").innerText = "$" + calculatedBalance.toFixed(4);
+        document.getElementById("amount").value = calculatedBalance.toFixed(4);
+
+        let btn = document.getElementById("submitBtn");
+        let statusMsg = document.getElementById("statusMsg");
+
+        if (calculatedBalance >= 2.5) {
+            btn.style.background = "#27ae60";
+            btn.style.cursor = "pointer";
+            btn.removeAttribute("disabled");
+            btn.innerText = "طلب سحب عبر بينانس";
+            statusMsg.style.color = "#27ae60";
+            statusMsg.innerText = "رصيدك مؤهل للسحب!";
+        } else {
+            btn.style.background = "#95a5a6";
+            btn.style.cursor = "not-allowed";
+            btn.setAttribute("disabled", "true");
+            statusMsg.style.color = "#e67e22";
+            statusMsg.innerText = `الحد الأدنى للسحب هو 2.5 دولار (يتطلب 1000 نقطة).`;
+        }
+
+        function handleWithdraw(event) {
+            event.preventDefault();
+            let binanceId = document.getElementById("binanceId").value.trim();
+            let amount = parseFloat(document.getElementById("amount").value);
+            
+            if (!binanceId) {
+                alert("❌ يرجى إدخال معرف بينانس بشكل إجباري قبل إتمام السحب!");
+                return;
+            }
+
+            if (amount < 2.5) {
+                alert("❌ الحد الأدنى للسحب هو 2.5 دولار!");
+                return;
+            }
+
+            if (amount > 1000) {
+                alert("❌ الحد الأقصى للسحب في الدفعة الواحدة هو 1000 دولار!");
+                return;
+            }
+
+            if (amount > calculatedBalance) {
+                alert("❌ المبلغ المطلوب أكبر من رصيدك الحالي!");
+                return;
+            }
+
+            let pointsToDeduct = Math.round(amount / 0.0025);
+            currentUser.points -= pointsToDeduct;
+            if (currentUser.points < 0) currentUser.points = 0;
+            visitors[userIP] = currentUser;
+            localStorage.setItem("siteVisitors", JSON.stringify(visitors));
+            
+            let withdraws = JSON.parse(localStorage.getItem("adminWithdraws")) || [];
+            withdraws.unshift({
+                binanceId: binanceId,
+                amount: amount,
+                ip: userIP,
+                status: "pending",
+                time: new Date().toLocaleTimeString() + " - " + new Date().toLocaleDateString()
+            });
+            localStorage.setItem("adminWithdraws", JSON.stringify(withdraws));
+
+            alert("✅ تم تقديم طلب السحب بنجاح!");
+            checkOrderStatus();
+            
+            document.getElementById("pointsCount").innerText = currentUser.points.toLocaleString();
+            document.getElementById("balanceAmount").innerText = "$" + (currentUser.points * 0.0025).toFixed(4);
+        }
+
+        checkOrderStatus();
+        setInterval(checkOrderStatus, 2000);
+    </script>
+</body>
+</html>

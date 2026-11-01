@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Mods - صفحة التحميل الآمن</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: center; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
+        .menu-btn { background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
+        .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
+        .side-menu a { padding: 12px 25px; text-decoration: none; font-size: 20px; color: white; display: block; transition: 0.2s; }
+        .side-menu a:hover { background-color: #34495e; color: #f1c40f; }
+        .side-menu .close-btn { position: absolute; top: 10px; left: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .bottom-nav a { color: #bdc3c7; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .bottom-nav a span.icon { font-size: 18px; margin-bottom: 2px; }
+        .bottom-nav a:hover, .bottom-nav a.active { color: #f1c40f; }
+
+        .container { padding: 40px 20px; max-width: 500px; margin: 30px auto; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        
+        .timer-box { font-size: 45px; font-weight: bold; color: #e74c3c; margin: 20px 0; }
+        
+        .download-action-btn { display: none; background: #27ae60; color: white; padding: 15px 30px; font-size: 18px; text-decoration: none; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 10px rgba(39,174,96,0.3); transition: 0.2s; }
+        .download-action-btn:hover { background: #219653; }
+        
+        .file-info { background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 13px; color: #333; border: 1px solid #e2e8f0; word-break: break-all; }
+    </style>
+</head>
+<body>
+    <header><span>تحضير رابط التحميل الآمن</span><button class="menu-btn" onclick="openMenu()">☰</button></header>
+    
+    <div id="mySideMenu" class="side-menu">
+        <button class="close-btn" onclick="closeMenu()">&times;</button>
+        <a href="index.html">الرئيسية (Home)</a>
+        <a href="apps.html">التطبيقات (Apps)</a>
+        <a href="games.html">الألعاب (Games)</a>
+        <a href="upload.html">رفع ملف (Upload)</a>
+        <a href="withdraw.html">سحب الأرباح (Withdraw)</a>
+        <a href="about.html">عن الموقع (About Me)</a>
+    </div>
+
+    <div class="container">
+        <h2>جاري تجهيز الرابط المباشر</h2>
+        <p>يرجى الانتظار قليلاً ريثما يكتمل العد التنازلي وتجهيز رابط ميديافاير الآمن...</p>
+        
+        <div class="file-info" id="fileInfoBox">جاري تحميل بيانات اللعبة...</div>
+
+        <div class="timer-box" id="timer">5</div>
+
+        <!-- زر التحميل الذي يوجه الزائر إلى رابط ميديافاير الخارجي -->
+        <a id="realDownloadBtn" class="download-action-btn" target="_blank">📥 تحميل من ميديافاير الآن (Download)</a>
+    </div>
+    
+    <nav class="bottom-nav">
+        <a href="index.html"><span class="icon">🏠</span>الرئيسية</a>
+        <a href="games.html"><span class="icon">🎮</span>الألعاب</a>
+        <a href="apps.html"><span class="icon">📱</span>التطبيقات</a>
+        <a href="upload.html"><span class="icon">📤</span>رفع</a>
+        <a href="withdraw.html"><span class="icon">💰</span>سحب</a>
+    </nav>
+
+    <script>
+        function openMenu() { document.getElementById("mySideMenu").style.width = "250px"; }
+        function closeMenu() { document.getElementById("mySideMenu").style.width = "0"; }
+
+        let currentFile = JSON.parse(localStorage.getItem("currentDownloadFile"));
+        let infoBox = document.getElementById("fileInfoBox");
+        let downloadBtn = document.getElementById("realDownloadBtn");
+
+        if (currentFile && currentFile.downloadLink) {
+            infoBox.innerHTML = `📦 <strong>اسم اللعبة:</strong> ${currentFile.name}<br>🔗 <strong>رابط التحميل:</strong> <a href="${currentFile.downloadLink}" target="_blank" style="color:#2980b9;">${currentFile.downloadLink}</a>`;
+            downloadBtn.href = currentFile.downloadLink;
+        } else {
+            infoBox.innerHTML = `⚠️ لم يتم العثور على رابط مخصص، سيتم توجيهك للرابط الافتراضي.`;
+            downloadBtn.href = "https://www.mediafire.com";
+        }
+
+        let timeLeft = 5;
+        let timerElement = document.getElementById("timer");
+
+        let countdown = setInterval(function() {
+            timeLeft--;
+            timerElement.innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerElement.style.display = "none";
+                document.querySelector("p").innerText = "✅ تم تجهيز الرابط بنجاح! انقر للتحميل من ميديافاير:";
+                downloadBtn.style.display = "inline-block";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

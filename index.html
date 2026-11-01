@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Mods - متجر المودات والألعاب</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: right; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
+        .menu-btn { background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
+        .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
+        .side-menu a { padding: 12px 25px; text-decoration: none; font-size: 20px; color: white; display: block; transition: 0.2s; }
+        .side-menu a:hover { background-color: #34495e; color: #f1c40f; }
+        .side-menu .close-btn { position: absolute; top: 10px; left: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .bottom-nav a { color: #bdc3c7; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .bottom-nav a span.icon { font-size: 18px; margin-bottom: 2px; }
+        .bottom-nav a:hover, .bottom-nav a.active { color: #f1c40f; }
+
+        .container { padding: 20px; max-width: 900px; margin: auto; }
+
+        .store-brand-box { text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #1a1a2e, #16213e); border-radius: 12px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border: 1px solid #0f3460; }
+        .store-title { font-size: 36px; font-weight: bold; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(45deg, #00dbde, #fc00ff, #f1c40f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px rgba(252, 0, 255, 0.4); margin: 0 0 8px 0; letter-spacing: 1px; }
+        .store-subtitle { color: #a0aec0; font-size: 14px; margin: 0; font-weight: normal; }
+
+        .reward-banner { background: linear-gradient(135deg, #27ae60, #2980b9); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+        .reward-banner h3 { margin: 0 0 5px 0; font-size: 18px; }
+        .reward-banner p { margin: 0; font-size: 13px; opacity: 0.9; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 25px; margin-bottom: 10px; border-bottom: 2px solid #ddd; padding-bottom: 5px; }
+        .section-title { font-size: 18px; font-weight: bold; color: #333; }
+        .more-btn { color: #e74c3c; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .more-btn:hover { text-decoration: underline; }
+
+        .horizontal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+        .item-card { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
+        .item-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .item-thumb { width: 100%; height: 90px; background: #e2e8f0; border-radius: 6px; margin-bottom: 8px; object-fit: cover; }
+        .item-title { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .download-btn { display: inline-block; background: #27ae60; color: white; padding: 4px 8px; font-size: 11px; text-decoration: none; border-radius: 4px; font-weight: bold; }
+        .download-btn:hover { background: #219653; }
+
+        .empty-text { color: #888; font-size: 13px; text-align: center; padding: 10px; width: 100%; grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+
+    <script>
+        let userIP = localStorage.getItem("mySimulatedIP");
+        if (!userIP) {
+            userIP = "192.168.1." + Math.floor(Math.random() * 200 + 10);
+            localStorage.setItem("mySimulatedIP", userIP);
+        }
+
+        let bannedIPs = JSON.parse(localStorage.getItem("bannedIPs")) || [];
+        if (bannedIPs.includes(userIP)) {
+            document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20vh;'>🚫 تم حظرك نهائياً من هذا الخادم والموقع.</h1>";
+            throw new Error("Banned User");
+        }
+
+        let visitors = JSON.parse(localStorage.getItem("siteVisitors")) || {};
+        if (!visitors[userIP]) {
+            visitors[userIP] = { points: 0, downloads: 0, lastVisit: new Date().toLocaleTimeString() };
+        } else {
+            visitors[userIP].lastVisit = new Date().toLocaleTimeString();
+        }
+        localStorage.setItem("siteVisitors", JSON.stringify(visitors));
+    </script>
+
+    <header>
+        <span>Galaxy Mods</span>
+        <button class="menu-btn" onclick="openMenu()">☰</button>
+    </header>
+    
+    <div id="mySideMenu" class="side-menu">
+        <button class="close-btn" onclick="closeMenu()">&times;</button>
+        <a href="index.html">الرئيسية (Home)</a>
+        <a href="apps.html">التطبيقات (Apps)</a>
+        <a href="games.html">الألعاب (Games)</a>
+        <a href="upload.html">رفع ملف (Upload)</a>
+        <a href="withdraw.html">سحب الأرباح (Withdraw)</a>
+        <a href="about.html">عن الموقع (About Me)</a>
+    </div>
+
+    <div class="container">
+        
+        <div class="store-brand-box">
+            <h1 class="store-title">Galaxy Mods</h1>
+            <p class="store-subtitle">المتجر الأقوى لتحميل الألعاب والمودات المعدلة بروابط مباشرة</p>
+        </div>
+
+        <div class="reward-banner">
+            <h3>🎁 نظام أرباح صناع المحتوى</h3>
+            <p>ارفع موداتك واكسب <strong>$2.5</strong> لكل 1000 تنزيل فريد! السحب متاح حصرياً عبر بينانس.</p>
+        </div>
+
+        <!-- قسم أحدث الألعاب في الرئيسية (يعرض فقط الألعاب المرفوعة حديثاً وبدون أي مربعات وهمية) -->
+        <div class="section-header">
+            <span class="section-title">🔥 Latest Games</span>
+            <a href="games.html" class="more-btn">More &raquo;</a>
+        </div>
+        <div class="horizontal-grid" id="homeGamesGrid"></div>
+
+        <!-- قسم أحدث التطبيقات في الرئيسية (يعرض فقط التطبيقات المرفوعة حديثاً وبدون أي مربعات وهمية) -->
+        <div class="section-header">
+            <span class="section-title">⚡ Latest Apps</span>
+            <a href="apps.html" class="more-btn">More &raquo;</a>
+        </div>
+        <div class="horizontal-grid" id="homeAppsGrid"></div>
+    </div>
+    
+    <nav class="bottom-nav">
+        <a href="index.html" class="active"><span class="icon">🏠</span>الرئيسية</a>
+        <a href="games.html"><span class="icon">🎮</span>الألعاب</a>
+        <a href="apps.html"><span class="icon">📱</span>التطبيقات</a>
+        <a href="upload.html"><span class="icon">📤</span>رفع</a>
+        <a href="withdraw.html"><span class="icon">💰</span>سحب</a>
+    </nav>
+
+    <script>
+        function openMenu() { document.getElementById("mySideMenu").style.width = "250px"; }
+        function closeMenu() { document.getElementById("mySideMenu").style.width = "0"; }
+
+        function loadHomeContent() {
+            let items = JSON.parse(localStorage.getItem("storeItems")) || [];
+            
+            let games = items.filter(item => item.type === "game");
+            let apps = items.filter(item => item.type === "app");
+
+            // عرض الألعاب في الرئيسية (فقط الحقيقية بحد أقصى 4 عناصر، وإن لم توجد يظهر تنبيه نظيف)
+            let gGrid = document.getElementById("homeGamesGrid");
+            if (games.length === 0) {
+                gGrid.innerHTML = `<div class="empty-text">لا توجد ألعاب مرفوعة حالياً.</div>`;
+            } else {
+                let gHtml = "";
+                games.slice(0, 4).forEach(g => {
+                    let thumb = g.image ? `<img src="${g.image}" class="item-thumb" alt="صورة">` : `<div class="item-thumb" style="display:flex; align-items:center; justify-content:center; color:#888; font-size:11px;">🎮 لعبة</div>`;
+                    gHtml += `
+                        <div class="item-card">
+                            <div>
+                                ${thumb}
+                                <div class="item-title">${g.name}</div>
+                            </div>
+                            <a href="download.html" class="download-btn">تحميل</a>
+                        </div>
+                    `;
+                });
+                gGrid.innerHTML = gHtml;
+            }
+
+            // عرض التطبيقات في الرئيسية (فقط الحقيقية بحد أقصى 4 عناصر)
+            let aGrid = document.getElementById("homeAppsGrid");
+            if (apps.length === 0) {
+                aGrid.innerHTML = `<div class="empty-text">لا توجد تطبيقات مرفوعة حالياً.</div>`;
+            } else {
+                let aHtml = "";
+                apps.slice(0, 4).forEach(a => {
+                    let thumb = a.image ? `<img src="${a.image}" class="item-thumb" alt="أيقونة">` : `<div class="item-thumb" style="display:flex; align-items:center; justify-content:center; color:#888; font-size:11px;">📱 تطبيق</div>`;
+                    aHtml += `
+                        <div class="item-card">
+                            <div>
+                                ${thumb}
+                                <div class="item-title">${a.name}</div>
+                            </div>
+                            <a href="download.html" class="download-btn">تحميل</a>
+                        </div>
+                    `;
+                });
+                aGrid.innerHTML = aHtml;
+            }
+        }
+
+        loadHomeContent();
+    </script>
+</body>
+</html>

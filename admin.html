@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Center - Admin Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0f0f1a; color: #fff; margin: 0; padding: 20px; text-align: right; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e74c3c; padding-bottom: 15px; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #e74c3c; font-size: 22px; }
+        .back-home { background: #2c3e50; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; font-size: 14px; }
+        
+        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: #1a1a2e; padding: 15px; border-radius: 8px; border-right: 4px solid #3498db; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .stat-card h3 { margin: 0 0 5px 0; font-size: 13px; color: #aaa; }
+        .stat-card p { margin: 0; font-size: 20px; font-weight: bold; color: #fff; }
+
+        .card { background: #1a1a2e; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .card h3 { margin-top: 0; color: #f1c40f; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+        .search-box { padding: 8px 12px; width: 250px; background: #161625; border: 1px solid #444; color: #fff; border-radius: 5px; font-size: 13px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        th { background: #22223b; color: #f1c40f; }
+        td { background: #161625; color: #ddd; }
+
+        .action-btn { padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; border: none; margin: 2px; }
+        .add-btn { background: #27ae60; color: white; }
+        .sub-btn { background: #e67e22; color: white; }
+        .ban-btn { background: #c0392b; color: white; }
+        .pay-btn { background: #2980b9; color: white; }
+        .del-btn { background: #c0392b; color: white; }
+        .del-btn:hover { background: #e74c3c; }
+
+        .banned-badge { background: #c0392b; color: white; padding: 3px 6px; border-radius: 3px; font-size: 11px; }
+        .paid-badge { background: #27ae60; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
+        .item-thumb-sm { width: 35px; height: 35px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🛡️ لوحة قيادة الأدمن السرية (Command Center)</h1>
+        <a href="index.html" class="back-home">العودة للموقع الخارجي</a>
+    </div>
+
+    <!-- إحصائيات عامة -->
+    <div class="grid-stats">
+        <div class="stat-card" style="border-color: #3498db;">
+            <h3>إجمالي الزيارات (IPs)</h3>
+            <p id="totalVisitors">0</p>
+        </div>
+        <div class="stat-card" style="border-color: #9b59b6;">
+            <h3>إجمالي الألعاب والتطبيقات</h3>
+            <p id="totalStoreItems">0</p>
+        </div>
+        <div class="stat-card" style="border-color: #2ecc71;">
+            <h3>طلبات السحب الواردة</h3>
+            <p id="totalWithdrawals">0</p>
+        </div>
+        <div class="stat-card" style="border-color: #e74c3c;">
+            <h3>المستخدمين المحظورين</h3>
+            <p id="totalBanned">0</p>
+        </div>
+    </div>
+
+    <!-- قسم إدارة الألعاب والتطبيقات مع زر الحذف والبحث -->
+    <div class="card">
+        <h3>
+            <span>🎮📱 إدارة الألعاب والتطبيقات وحذفها</span>
+            <input type="text" id="searchStoreInput" class="search-box" placeholder="بحث عن لعبة أو تطبيق..." onkeyup="filterStoreItems()">
+        </h3>
+        <table id="storeTable">
+            <thead>
+                <tr>
+                    <th>الأيقونة والاسم</th>
+                    <th>النوع</th>
+                    <th>الوصف</th>
+                    <th>تاريخ الرفع</th>
+                    <th>إجراء التحكم</th>
+                </tr>
+            </thead>
+            <tbody id="storeTableBody">
+                <tr><td colspan="5" style="color: #777;">لا توجد عناصر مرفوعة حالياً.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- قسم الزوار والتحكم بالنقاط -->
+    <div class="card">
+        <h3>👥 إدارة المستخدمين والتحكم بالنقاط ورصيد السحب</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>عنوان الـ IP</th>
+                    <th>النقاط الحالية والرصيد</th>
+                    <th>إجمالي التنزيلات</th>
+                    <th>آخر زيارة</th>
+                    <th>التحكم بالنقاط</th>
+                    <th>الإجراء الأمني</th>
+                </tr>
+            </thead>
+            <tbody id="visitorsBody">
+                <tr><td colspan="6" style="color: #777;">لا توجد بيانات زوار مسجلة بعد.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- قسم طلبات السحب والأرباح -->
+    <div class="card">
+        <h3>💰 طلبات السحب المباشرة وإرسال أموال بينانس</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>معرف بينانس / البريد</th>
+                    <th>المبلغ المطلوب ($)</th>
+                    <th>عنوان IP المستخدم</th>
+                    <th>التوقيت</th>
+                    <th>حالة الدفع</th>
+                </tr>
+            </thead>
+            <tbody id="withdrawBody">
+                <tr><td colspan="5" style="color: #777;">لا توجد طلبات سحب حتى الآن.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function loadAdminData() {
+            let visitors = JSON.parse(localStorage.getItem("siteVisitors")) || {};
+            let bannedIPs = JSON.parse(localStorage.getItem("bannedIPs")) || [];
+            let storeItems = JSON.parse(localStorage.getItem("storeItems")) || [];
+            
+            // إحصائيات
+            document.getElementById("totalVisitors").innerText = Object.keys(visitors).length;
+            document.getElementById("totalBanned").innerText = bannedIPs.length;
+            document.getElementById("totalStoreItems").innerText = storeItems.length;
+
+            // تحميل جدول الألعاب والتطبيقات
+            renderStoreTable(storeItems);
+
+            // تحميل جدول الزوار
+            let vBody = document.getElementById("visitorsBody");
+            let vKeys = Object.keys(visitors);
+            if (vKeys.length === 0) {
+                vBody.innerHTML = `<tr><td colspan="6" style="color: #777;">لا توجد بيانات زوار مسجلة بعد.</td></tr>`;
+            } else {
+                vBody.innerHTML = "";
+                vKeys.forEach(ip => {
+                    let user = visitors[ip];
+                    let isBanned = bannedIPs.includes(ip);
+                    let balance = ((user.points || 0) * 0.0025).toFixed(4);
+                    let tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><code>${ip}</code></td>
+                        <td><strong>${user.points || 0} نقطة</strong><br><span style="color: #2ecc71;">($${balance})</span></td>
+                        <td>${user.downloads || 0} تنزيل</td>
+                        <td>${user.lastVisit}</td>
+                        <td>
+                            <button class="action-btn add-btn" onclick="modifyPoints('${ip}', 100)">+100</button>
+                            <button class="action-btn add-btn" onclick="modifyPoints('${ip}', 1000)">+1000</button>
+                            <button class="action-btn sub-btn" onclick="modifyPoints('${ip}', -100)">-100</button>
+                            <button class="action-btn sub-btn" onclick="resetPoints('${ip}')">تصفير</button>
+                        </td>
+                        <td>
+                            ${isBanned ? '<span class="banned-badge">محظور</span>' : `<button class="action-btn ban-btn" onclick="banUser('${ip}')">حظر نهائي</button>`}
+                        </td>
+                    `;
+                    vBody.appendChild(tr);
+                });
+            }
+
+            // تحميل طلبات السحب
+            let withdraws = JSON.parse(localStorage.getItem("adminWithdraws")) || [];
+            document.getElementById("totalWithdrawals").innerText = withdraws.length;
+            let wBody = document.getElementById("withdrawBody");
+
+            if (withdraws.length === 0) {
+                wBody.innerHTML = `<tr><td colspan="5" style="color: #777;">لا توجد طلبات سحب حتى الآن.</td></tr>`;
+            } else {
+                wBody.innerHTML = "";
+                withdraws.forEach((w, index) => {
+                    let tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><strong>${w.binanceId}</strong></td>
+                        <td style="color: #2ecc71; font-weight: bold;">$${w.amount}</td>
+                        <td><code>${w.ip}</code></td>
+                        <td>${w.time}</td>
+                        <td>
+                            ${w.status === "paid" 
+                                ? '<span class="paid-badge">✔ تم الدفع</span>' 
+                                : `<button class="action-btn pay-btn" onclick="markAsPaid(${index}, '${w.ip}')">تم الدفع</button>`
+                            }
+                        </td>
+                    `;
+                    wBody.appendChild(tr);
+                });
+            }
+        }
+
+        // دالة عرض جدول الألعاب والتطبيقات مع دعم البحث
+        function renderStoreTable(items) {
+            let sBody = document.getElementById("storeTableBody");
+            let searchQuery = document.getElementById("searchStoreInput") ? document.getElementById("searchStoreInput").value.toLowerCase() : "";
+
+            let filteredItems = items.filter(item => item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery));
+
+            if (filteredItems.length === 0) {
+                sBody.innerHTML = `<tr><td colspan="5" style="color: #777;">لا توجد عناصر مطابقة للبحث أو مرفوعة.</td></tr>`;
+                return;
+            }
+
+            sBody.innerHTML = "";
+            filteredItems.forEach((item, index) => {
+                // البحث عن الموقع الحقيقي للعنصر في المصفوفة الكاملة لحذفه بدقة
+                let realIndex = items.findIndex(i => i.name === item.name && i.time === item.time);
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="text-align: right;"><img src="${item.image}" class="item-thumb-sm"><strong>${item.name}</strong></td>
+                    <td><span style="padding: 3px 8px; border-radius: 4px; background: ${item.type === 'game' ? '#8e44ad' : '#27ae60'};">${item.type === 'game' ? 'لعبة 🎮' : 'تطبيق 📱'}</span></td>
+                    <td>${item.desc}</td>
+                    <td>${item.time}</td>
+                    <td><button class="action-btn del-btn" onclick="deleteStoreItem(${realIndex})">🗑️ حذف</button></td>
+                `;
+                sBody.appendChild(tr);
+            });
+        }
+
+        // دالة البحث الحية
+        function filterStoreItems() {
+            let storeItems = JSON.parse(localStorage.getItem("storeItems")) || [];
+            renderStoreTable(storeItems);
+        }
+
+        // دالة حذف لعبة أو تطبيق وإزالته من جميع الأقسام نهائياً
+        function deleteStoreItem(index) {
+            let storeItems = JSON.parse(localStorage.getItem("storeItems")) || [];
+            if (confirm(`هل أنت متأكد من رغبتك في حذف "${storeItems[index].name}" نهائياً؟ سيتم إزالته من جميع الأقسام.`)) {
+                storeItems.splice(index, 1);
+                localStorage.setItem("storeItems", JSON.stringify(storeItems));
+                alert("🗑️ تم حذف العنصر بنجاح!");
+                loadAdminData();
+            }
+        }
+
+        function markAsPaid(index, ip) {
+            let withdraws = JSON.parse(localStorage.getItem("adminWithdraws")) || [];
+            let visitors = JSON.parse(localStorage.getItem("siteVisitors")) || {};
+            if (withdraws[index]) {
+                withdraws[index].status = "paid";
+                localStorage.setItem("adminWithdraws", JSON.stringify(withdraws));
+                if (visitors[ip]) {
+                    visitors[ip].withdrawStatus = "paid";
+                    localStorage.setItem("siteVisitors", JSON.stringify(visitors));
+                }
+                alert("✅ تم تحديث الطلب وإرسال إشعار الدفع للمستخدم بنجاح!");
+                loadAdminData();
+            }
+        }
+
+        function modifyPoints(ip, amount) {
+            let visitors = JSON.parse(localStorage.getItem("siteVisitors")) || {};
+            if (visitors[ip]) {
+                visitors[ip].points = (visitors[ip].points || 0) + amount;
+                if (visitors[ip].points < 0) visitors[ip].points = 0;
+                visitors[ip].adminNotice = `تم تعديل نقاطك بواسطة الأدمن بقيمة (${amount > 0 ? '+' + amount : amount}) نقطة!`;
+                localStorage.setItem("siteVisitors", JSON.stringify(visitors));
+                loadAdminData();
+            }
+        }
+
+        function resetPoints(ip) {
+            let visitors = JSON.parse(localStorage.getItem("siteVisitors")) || {};
+            if (visitors[ip]) {
+                visitors[ip].points = 0;
+                visitors[ip].adminNotice = `تم تصفير رصيدك ونقاطك من قبل الأدمن.`;
+                localStorage.setItem("siteVisitors", JSON.stringify(visitors));
+                loadAdminData();
+            }
+        }
+
+        function banUser(ip) {
+            let bannedIPs = JSON.parse(localStorage.getItem("bannedIPs")) || [];
+            if (!bannedIPs.includes(ip)) {
+                bannedIPs.push(ip);
+                localStorage.setItem("bannedIPs", JSON.stringify(bannedIPs));
+                alert(`تم حظر الـ IP بنجاح: ${ip}`);
+                loadAdminData();
+            }
+        }
+
+        loadAdminData();
+    </script>
+
+</body>
+</html>

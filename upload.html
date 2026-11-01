@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Mods - الرفع السحابي الذكي</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: center; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #e67e22; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
+        .menu-btn { background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
+        .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
+        .side-menu a { padding: 12px 25px; text-decoration: none; font-size: 20px; color: white; display: block; transition: 0.2s; }
+        .side-menu a:hover { background-color: #34495e; color: #f1c40f; }
+        .side-menu .close-btn { position: absolute; top: 10px; left: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .bottom-nav a { color: #bdc3c7; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
+        .bottom-nav a span.icon { font-size: 18px; margin-bottom: 2px; }
+        .bottom-nav a:hover, .bottom-nav a.active { color: #f1c40f; }
+
+        .container { padding: 30px; max-width: 500px; margin: auto; background: white; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: right; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .submit-btn { background: #27ae60; color: white; border: none; padding: 12px 20px; width: 100%; font-size: 18px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .submit-btn:hover { background: #219653; }
+
+        /* شريط التقدم الحقيقي */
+        .progress-container { width: 100%; background-color: #e2e8f0; border-radius: 6px; margin-top: 15px; overflow: hidden; display: none; }
+        .progress-bar { width: 0%; height: 26px; background-color: #27ae60; text-align: center; color: white; font-size: 14px; line-height: 26px; font-weight: bold; transition: width 0.1s ease; }
+    </style>
+</head>
+<body>
+    <header><span>الرفع السحابي الذكي</span><button class="menu-btn" onclick="openMenu()">☰</button></header>
+    
+    <div id="mySideMenu" class="side-menu">
+        <button class="close-btn" onclick="closeMenu()">&times;</button>
+        <a href="index.html">الرئيسية (Home)</a>
+        <a href="apps.html">التطبيقات (Apps)</a>
+        <a href="games.html">الألعاب (Games)</a>
+        <a href="upload.html">رفع ملف (Upload)</a>
+        <a href="withdraw.html">سحب الأرباح (Withdraw)</a>
+        <a href="about.html">عن الموقع (About Me)</a>
+    </div>
+
+    <div class="container">
+        <h2>رفع ملف إلى السحابة مباشرة</h2>
+        <p style="font-size: 13px; color: #666; margin-bottom: 20px;">سيتم رفع الملف للسحابة مع إظهار شريط التقدم لحظياً.</p>
+        
+        <form id="uploadForm" onsubmit="smartCloudUpload(event)">
+            <div class="form-group">
+                <label>نوع العنصر: *</label>
+                <select id="fileType" required>
+                    <option value="" disabled selected>اختر النوع...</option>
+                    <option value="game">🎮 لعبة (Game)</option>
+                    <option value="app">📱 تطبيق (App)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>اسم اللعبة أو التطبيق: *</label>
+                <input type="text" id="fileName" placeholder="أدخل اسم اللعبة..." required>
+            </div>
+
+            <div class="form-group">
+                <label>وصف مختصر:</label>
+                <textarea id="fileDesc" rows="3" placeholder="مميزات المود..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>ملف الـ APK أو الملف: *</label>
+                <input type="file" id="apkFile" required>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn">بدء الرفع السحابي</button>
+
+            <!-- شريط التقدم -->
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+        </form>
+    </div>
+    
+    <nav class="bottom-nav">
+        <a href="index.html"><span class="icon">🏠</span>الرئيسية</a>
+        <a href="games.html"><span class="icon">🎮</span>الألعاب</a>
+        <a href="apps.html"><span class="icon">📱</span>التطبيقات</a>
+        <a href="upload.html" class="active"><span class="icon">📤</span>رفع</a>
+        <a href="withdraw.html"><span class="icon">💰</span>سحب</a>
+    </nav>
+
+    <script>
+        function openMenu() { document.getElementById("mySideMenu").style.width = "250px"; }
+        function closeMenu() { document.getElementById("mySideMenu").style.width = "0"; }
+
+        function smartCloudUpload(event) {
+            event.preventDefault();
+
+            let type = document.getElementById("fileType").value;
+            let name = document.getElementById("fileName").value.trim();
+            let desc = document.getElementById("fileDesc").value.trim();
+            let fileInput = document.getElementById("apkFile");
+
+            if (!name || !type || fileInput.files.length === 0) {
+                alert("يرجى تعبئة كافة الحقول وإرفاق الملف!");
+                return;
+            }
+
+            let file = fileInput.files[0];
+            let submitBtn = document.getElementById("submitBtn");
+            let progressContainer = document.getElementById("progressContainer");
+            let progressBar = document.getElementById("progressBar");
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "جاري الرفع للسحابة...";
+            progressContainer.style.display = "block";
+
+            let formData = new FormData();
+            formData.append("reqtype", "fileupload");
+            formData.append("fileToUpload", file);
+
+            let xhr = new XMLHttpRequest();
+            // استخدام رابط الـ API المباشر مع وكيل CORS مجاني وموثوق لتجاوز أي حظر في المتصفح
+            xhr.open("POST", "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://catbox.moe/user/api.php"), true);
+            
+            // ملاحظة: بدلاً من الوكيل إذا أردنا الاتصال المباشر تماماً، Catbox يدعم CORS للاستدعاءات المباشرة:
+            xhr.open("POST", "https://catbox.moe/user/api.php", true);
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    let percentComplete = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percentComplete + "%";
+                    progressBar.innerText = percentComplete + "%";
+                }
+            };
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    let downloadUrl = xhr.responseText.trim();
+
+                    if (downloadUrl.startsWith("https://")) {
+                        let canvas = document.createElement("canvas");
+                        canvas.width = 120; canvas.height = 120;
+                        let ctx = canvas.getContext("2d");
+                        ctx.fillStyle = type === 'game' ? '#8e44ad' : '#27ae60';
+                        ctx.fillRect(0, 0, 120, 120);
+                        ctx.font = "bold 45px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                        ctx.fillStyle = "#ffffff"; ctx.fillText(type === 'game' ? '🎮' : '📱', 60, 45);
+                        ctx.font = "bold 22px Arial"; ctx.fillStyle = "#f1c40f";
+                        ctx.fillText(name.charAt(0).toUpperCase(), 60, 95);
+
+                        let newItem = {
+                            type: type,
+                            name: name,
+                            desc: desc || `ملف سحابي: ${file.name}`,
+                            image: canvas.toDataURL(),
+                            downloadLink: downloadUrl,
+                            time: new Date().toLocaleDateString()
+                        };
+
+                        let uploadedItems = JSON.parse(localStorage.getItem("storeItems")) || [];
+                        uploadedItems.unshift(newItem);
+                        localStorage.setItem("storeItems", JSON.stringify(uploadedItems));
+
+                        alert("تم الرفع للسحابة وربط الملف بنجاح تام!");
+                        window.location.href = type === 'game' ? "games.html" : "apps.html";
+                    } else {
+                        alert("حدث خطأ في استجابة السحابة: " + downloadUrl);
+                        resetForm();
+                    }
+                } else {
+                    alert("فشل الاتصال بالسحابة. رمز الخطأ: " + xhr.status);
+                    resetForm();
+                }
+            };
+
+            xhr.onerror = function() {
+                // خطة بديلة ذكية في حال حظر المتصفح المباشر: توجيه المستخدم لرفع الملف بضغطة زر مباشرة لموقع السحابة ثم لصق الرابط
+                if (confirm("عذراً، قام متصفحك بحظر الرفع المباشر لأسباب أمنية. هل تريد فتح موقع الرفع السحابي للحصول على رابط مباشر فوراً؟")) {
+                    window.open("https://catbox.moe", "_blank");
+                }
+                resetForm();
+            };
+
+            xhr.send(formData);
+        }
+
+        function resetForm() {
+            let submitBtn = document.getElementById("submitBtn");
+            submitBtn.disabled = false;
+            submitBtn.innerText = "بدء الرفع السحابي";
+            document.getElementById("progressContainer").style.display = "none";
+            document.getElementById("progressBar").style.width = "0%";
+        }
+    </script>
+</body>
+</html>
