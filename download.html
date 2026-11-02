@@ -3,35 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Mods - صفحة التحميل الآمن</title>
+    <title>Galaxy Mods - صفحة التحميل الآمن والتقييمات</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: center; }
-        header { position: fixed; top: 0; left: 0; width: 100%; background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: right; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #e67e22; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
         .menu-btn { background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
         .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
         .side-menu a { padding: 12px 25px; text-decoration: none; font-size: 20px; color: white; display: block; transition: 0.2s; }
         .side-menu a:hover { background-color: #34495e; color: #f1c40f; }
         .side-menu .close-btn { position: absolute; top: 10px; left: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; text-align: center; }
         .bottom-nav a { color: #bdc3c7; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
         .bottom-nav a span.icon { font-size: 18px; margin-bottom: 2px; }
         .bottom-nav a:hover, .bottom-nav a.active { color: #f1c40f; }
 
-        .container { padding: 40px 20px; max-width: 500px; margin: 30px auto; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { color: #333; margin-bottom: 10px; }
-        p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .container { padding: 20px; max-width: 500px; margin: 20px auto; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }
+        .item-img { width: 110px; height: 110px; border-radius: 12px; object-fit: cover; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        h1 { color: #333; font-size: 22px; margin-bottom: 5px; }
+        .rating-badge { font-size: 15px; color: #f39c12; font-weight: bold; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+
+        .timer-container { margin-bottom: 20px; }
+        .timer-text { font-size: 15px; font-weight: bold; color: #e67e22; margin-bottom: 8px; }
+        .progress-bar-bg { width: 100%; background-color: #e2e8f0; border-radius: 6px; overflow: hidden; height: 12px; }
+        .progress-bar-fill { width: 0%; height: 100%; background-color: #e67e22; transition: width 1s linear; }
+
+        .download-btn { background: #27ae60; color: white; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-size: 16px; font-weight: bold; display: none; width: 80%; margin: auto; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+        .download-btn:hover { background: #219653; }
+
+        .reviews-section { margin-top: 30px; text-align: right; border-top: 2px solid #f1f2f6; padding-top: 20px; }
+        .reviews-section h3 { font-size: 17px; color: #2c3e50; margin-bottom: 12px; }
         
-        .timer-box { font-size: 45px; font-weight: bold; color: #e74c3c; margin: 20px 0; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; outline: none; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #e67e22; }
+
+        .submit-review-btn { background: #3498db; color: white; border: none; padding: 10px; width: 100%; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .submit-review-btn:hover { background: #2980b9; }
+
+        .comment-card { background: #f8f9fa; padding: 10px 12px; border-radius: 6px; margin-bottom: 10px; border-right: 4px solid #e67e22; text-align: right; }
+        .comment-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: bold; color: #333; margin-bottom: 4px; }
+        .comment-stars { color: #f39c12; }
+        .comment-body { font-size: 12px; color: #555; margin: 0; }
+        .no-comments { color: #888; font-size: 13px; text-align: center; padding: 10px; }
         
-        .download-action-btn { display: none; background: #27ae60; color: white; padding: 15px 30px; font-size: 18px; text-decoration: none; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 10px rgba(39,174,96,0.3); transition: 0.2s; }
-        .download-action-btn:hover { background: #219653; }
-        
-        .file-info { background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 13px; color: #333; border: 1px solid #e2e8f0; word-break: break-all; }
+        .muted-box { background: #fde8e8; color: #c0392b; padding: 15px; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; border: 1px solid #fbd5d5; margin-bottom: 15px; }
+        .error-box { color: #c0392b; font-size: 16px; margin-top: 30px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
-    <header><span>تحضير رابط التحميل الآمن</span><button class="menu-btn" onclick="openMenu()">☰</button></header>
+    <header><span>صفحة التحميل والتقييم</span><button class="menu-btn" onclick="openMenu()">☰</button></header>
     
     <div id="mySideMenu" class="side-menu">
         <button class="close-btn" onclick="closeMenu()">&times;</button>
@@ -43,17 +66,7 @@
         <a href="about.html">عن الموقع (About Me)</a>
     </div>
 
-    <div class="container">
-        <h2>جاري تجهيز الرابط المباشر</h2>
-        <p>يرجى الانتظار قليلاً ريثما يكتمل العد التنازلي وتجهيز رابط ميديافاير الآمن...</p>
-        
-        <div class="file-info" id="fileInfoBox">جاري تحميل بيانات اللعبة...</div>
-
-        <div class="timer-box" id="timer">5</div>
-
-        <!-- زر التحميل الذي يوجه الزائر إلى رابط ميديافاير الخارجي -->
-        <a id="realDownloadBtn" class="download-action-btn" target="_blank">📥 تحميل من ميديافاير الآن (Download)</a>
-    </div>
+    <div class="container" id="mainContainer"></div>
     
     <nav class="bottom-nav">
         <a href="index.html"><span class="icon">🏠</span>الرئيسية</a>
@@ -67,31 +80,153 @@
         function openMenu() { document.getElementById("mySideMenu").style.width = "250px"; }
         function closeMenu() { document.getElementById("mySideMenu").style.width = "0"; }
 
-        let currentFile = JSON.parse(localStorage.getItem("currentDownloadFile"));
-        let infoBox = document.getElementById("fileInfoBox");
-        let downloadBtn = document.getElementById("realDownloadBtn");
-
-        if (currentFile && currentFile.downloadLink) {
-            infoBox.innerHTML = `📦 <strong>اسم اللعبة:</strong> ${currentFile.name}<br>🔗 <strong>رابط التحميل:</strong> <a href="${currentFile.downloadLink}" target="_blank" style="color:#2980b9;">${currentFile.downloadLink}</a>`;
-            downloadBtn.href = currentFile.downloadLink;
-        } else {
-            infoBox.innerHTML = `⚠️ لم يتم العثور على رابط مخصص، سيتم توجيهك للرابط الافتراضي.`;
-            downloadBtn.href = "https://www.mediafire.com";
+        function getClientIP() {
+            let ip = localStorage.getItem("userClientIP");
+            if (!ip) {
+                ip = "192.168." + Math.floor(Math.random() * 200) + "." + Math.floor(Math.random() * 200);
+                localStorage.setItem("userClientIP", ip);
+            }
+            return ip;
         }
 
-        let timeLeft = 5;
-        let timerElement = document.getElementById("timer");
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('id');
 
-        let countdown = setInterval(function() {
-            timeLeft--;
-            timerElement.innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                timerElement.style.display = "none";
-                document.querySelector("p").innerText = "✅ تم تجهيز الرابط بنجاح! انقر للتحميل من ميديافاير:";
-                downloadBtn.style.display = "inline-block";
+        let allItems = JSON.parse(localStorage.getItem("storeItems")) || [];
+        let targetItem = allItems[itemId];
+
+        function calculateAverageRating(reviews) {
+            if (!reviews || reviews.length === 0) return "5.0";
+            let sum = reviews.reduce((acc, r) => acc + Number(r.rating), 0);
+            return (sum / reviews.length).toFixed(1);
+        }
+
+        function renderPage() {
+            let container = document.getElementById("mainContainer");
+            if (!targetItem) {
+                container.innerHTML = '<div class="error-box">❌ عذراً، هذا العنصر غير متوفر أو تم حذفه!</div>';
+                return;
             }
-        }, 1000);
+
+            if (!targetItem.reviews) targetItem.reviews = [];
+
+            let avgRating = calculateAverageRating(targetItem.reviews);
+            let userIP = getClientIP();
+            let mutedCommentIPs = JSON.parse(localStorage.getItem("mutedCommentIPs")) || [];
+            let isUserMuted = mutedCommentIPs.includes(userIP);
+
+            let reviewFormHtml = '';
+            if (isUserMuted) {
+                reviewFormHtml = `<div class="muted-box">🚫 تم تعليق حسابك من قبل الإدارة. أنت غير قادر على إرسال أي تعليقات جديدة.</div>`;
+            } else {
+                reviewFormHtml = `
+                    <form id="reviewForm" onsubmit="addReview(event)">
+                        <div class="form-group">
+                            <label>اسمك أو اسم المستخدم:</label>
+                            <input type="text" id="revName" placeholder="أدخل اسمك..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>التقييم:</label>
+                            <select id="revRating" required>
+                                <option value="5">⭐⭐⭐⭐⭐ (5/5 ممتاز)</option>
+                                <option value="4">⭐⭐⭐⭐ (4/5 جيد جداً)</option>
+                                <option value="3">⭐⭐⭐ (3/5 متوسط)</option>
+                                <option value="2">⭐⭐ (2/5 ضعيف)</option>
+                                <option value="1">⭐ (1/5 سيء)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>تعليقك:</label>
+                            <textarea id="revComment" rows="2" placeholder="اكتب رأيك في اللعبة أو التطبيق..." required></textarea>
+                        </div>
+                        <button type="submit" class="submit-review-btn">إرسال التقييم ✍️</button>
+                    </form>
+                `;
+            }
+
+            container.innerHTML = `
+                <img src="${targetItem.image}" alt="${targetItem.name}" class="item-img">
+                <h1>${targetItem.name}</h1>
+                <div class="rating-badge">⭐ ${avgRating} / 5.0 (${targetItem.reviews.length} تقييم)</div>
+                <p>${targetItem.desc}</p>
+                
+                <div class="timer-container" id="timerBox">
+                    <div class="timer-text" id="timerText">يرجى الانتظار 5 ثوانٍ...</div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="barFill"></div>
+                    </div>
+                </div>
+
+                <a href="${targetItem.downloadLink}" target="_blank" class="download-btn" id="downloadBtn">📥 تحميل مباشر الآن</a>
+
+                <div class="reviews-section">
+                    <h3>💬 تقييمات وتعليقات المستخدمين</h3>
+                    ${reviewFormHtml}
+
+                    <div style="margin-top: 20px;" id="commentsList">
+                        ${targetItem.reviews.length === 0 ? '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يتقيم!</div>' : 
+                            targetItem.reviews.map(r => `
+                                <div class="comment-card">
+                                    <div class="comment-header">
+                                        <span>👤 ${r.name}</span>
+                                        <span class="comment-stars">${'⭐'.repeat(r.rating)}</span>
+                                    </div>
+                                    <p class="comment-body">${r.comment}</p>
+                                </div>
+                            `).join('')
+                        }
+                    </div>
+                </div>
+            `;
+
+            let timeLeft = 5;
+            let timerText = document.getElementById("timerText");
+            let barFill = document.getElementById("barFill");
+            let downloadBtn = document.getElementById("downloadBtn");
+            let timerBox = document.getElementById("timerBox");
+
+            setTimeout(() => { barFill.style.width = "100%"; }, 100);
+
+            let countdown = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    timerText.innerText = `يرجى الانتظار ${timeLeft} ثوانٍ...`;
+                } else {
+                    clearInterval(countdown);
+                    timerBox.style.display = "none";
+                    downloadBtn.style.display = "inline-block";
+                }
+            }, 1000);
+        }
+
+        renderPage();
+
+        function addReview(event) {
+            event.preventDefault();
+            let userIP = getClientIP();
+            let mutedCommentIPs = JSON.parse(localStorage.getItem("mutedCommentIPs")) || [];
+
+            if (mutedCommentIPs.includes(userIP)) {
+                alert("❌ عذراً، تم تعليق حسابك ولا يمكنك إرسال تعليقات!");
+                return;
+            }
+
+            let name = document.getElementById("revName").value.trim();
+            let rating = document.getElementById("revRating").value;
+            let comment = document.getElementById("revComment").value.trim();
+
+            if (!name || !comment) return;
+
+            // يتم حفظ الـ IP في النظام الخلفي فقط دون عرضه للمستخدم
+            let newReview = { name, rating, comment, ip: userIP, time: new Date().toLocaleDateString() };
+            targetItem.reviews.unshift(newReview);
+
+            allItems[itemId] = targetItem;
+            localStorage.setItem("storeItems", JSON.stringify(allItems));
+
+            alert("✅ تم إضافة تقييمك بنجاح!");
+            renderPage();
+        }
     </script>
 </body>
 </html>

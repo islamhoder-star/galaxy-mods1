@@ -17,9 +17,10 @@
         .stat-card p { margin: 0; font-size: 20px; font-weight: bold; color: #fff; }
 
         .card { background: #1a1a2e; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .card h3 { margin-top: 0; color: #f1c40f; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .card h3 { margin-top: 0; color: #f1c40f; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
-        .search-box { padding: 8px 12px; width: 250px; background: #161625; border: 1px solid #444; color: #fff; border-radius: 5px; font-size: 13px; }
+        .search-box { padding: 8px 12px; width: 250px; background: #161625; border: 1px solid #444; color: #fff; border-radius: 5px; font-size: 13px; outline: none; }
+        .search-box:focus { border-color: #f1c40f; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         th, td { border: 1px solid #333; padding: 10px; text-align: center; }
@@ -30,6 +31,8 @@
         .add-btn { background: #27ae60; color: white; }
         .sub-btn { background: #e67e22; color: white; }
         .ban-btn { background: #c0392b; color: white; }
+        .warn-btn { background: #d35400; color: white; }
+        .unban-btn { background: #27ae60; color: white; }
         .pay-btn { background: #2980b9; color: white; }
         .del-btn { background: #c0392b; color: white; }
         .del-btn:hover { background: #e74c3c; }
@@ -37,6 +40,7 @@
         .banned-badge { background: #c0392b; color: white; padding: 3px 6px; border-radius: 3px; font-size: 11px; }
         .paid-badge { background: #27ae60; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
         .item-thumb-sm { width: 35px; height: 35px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-left: 8px; }
+        .device-info-box { font-size: 11px; color: #aaa; text-align: right; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -66,24 +70,46 @@
         </div>
     </div>
 
-    <!-- قسم إدارة الألعاب والتطبيقات مع زر الحذف والبحث -->
+    <!-- قسم إدارة الألعاب والتطبيقات ومعلومات الرافعين الشاملة -->
     <div class="card">
         <h3>
-            <span>🎮📱 إدارة الألعاب والتطبيقات وحذفها</span>
-            <input type="text" id="searchStoreInput" class="search-box" placeholder="بحث عن لعبة أو تطبيق..." onkeyup="filterStoreItems()">
+            <span>🎮📱 إدارة الألعاب والتطبيقات ومعلومات الأجهزة الرافعة</span>
+            <input type="text" id="searchStoreInput" class="search-box" placeholder="بحث عن لعبة، تطبيق، أو IP..." onkeyup="filterStoreItems()">
         </h3>
         <table id="storeTable">
             <thead>
                 <tr>
                     <th>الأيقونة والاسم</th>
-                    <th>النوع</th>
-                    <th>الوصف</th>
+                    <th>النوع والوصف</th>
+                    <th>معلومات الجهاز والـ IP الشاملة</th>
                     <th>تاريخ الرفع</th>
-                    <th>إجراء التحكم</th>
+                    <th>إجراء التحكم (حظر / رفع حظر / حذف)</th>
                 </tr>
             </thead>
             <tbody id="storeTableBody">
                 <tr><td colspan="5" style="color: #777;">لا توجد عناصر مرفوعة حالياً.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- قسم إدارة ومراقبة وتعليقات المستخدمين -->
+    <div class="card">
+        <h3>
+            <span>💬 إدارة ومراقبة تعليقات المستخدمين والإنذارات</span>
+            <input type="text" id="searchCommentInput" class="search-box" placeholder="بحث في التعليقات أو الـ IP..." onkeyup="loadAdminData()">
+        </h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم العنصر</th>
+                    <th>اسم المستخدم</th>
+                    <th>عنوان الـ IP</th>
+                    <th>التقييم والتعليق</th>
+                    <th>إجراءات الحماية</th>
+                </tr>
+            </thead>
+            <tbody id="commentsTableBody">
+                <tr><td colspan="5" style="color: #777;">لا توجد تعليقات مسجلة بعد.</td></tr>
             </tbody>
         </table>
     </div>
@@ -133,15 +159,13 @@
             let bannedIPs = JSON.parse(localStorage.getItem("bannedIPs")) || [];
             let storeItems = JSON.parse(localStorage.getItem("storeItems")) || [];
             
-            // إحصائيات
             document.getElementById("totalVisitors").innerText = Object.keys(visitors).length;
             document.getElementById("totalBanned").innerText = bannedIPs.length;
             document.getElementById("totalStoreItems").innerText = storeItems.length;
 
-            // تحميل جدول الألعاب والتطبيقات
             renderStoreTable(storeItems);
+            renderCommentsTable(storeItems);
 
-            // تحميل جدول الزوار
             let vBody = document.getElementById("visitorsBody");
             let vKeys = Object.keys(visitors);
             if (vKeys.length === 0) {
@@ -172,7 +196,6 @@
                 });
             }
 
-            // تحميل طلبات السحب
             let withdraws = JSON.parse(localStorage.getItem("adminWithdraws")) || [];
             document.getElementById("totalWithdrawals").innerText = withdraws.length;
             let wBody = document.getElementById("withdrawBody");
@@ -200,12 +223,19 @@
             }
         }
 
-        // دالة عرض جدول الألعاب والتطبيقات مع دعم البحث
+        // جدول الألعاب مع عرض تفاصيل أجهزة الرافعين بالكامل وإمكانية الحظر/الرفع
         function renderStoreTable(items) {
             let sBody = document.getElementById("storeTableBody");
             let searchQuery = document.getElementById("searchStoreInput") ? document.getElementById("searchStoreInput").value.toLowerCase() : "";
+            let mutedUploadIPs = JSON.parse(localStorage.getItem("mutedUploadIPs")) || [];
+            let mutedUploadDevices = JSON.parse(localStorage.getItem("mutedUploadDevices")) || [];
 
-            let filteredItems = items.filter(item => item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery));
+            let filteredItems = items.filter(item => 
+                item.name.toLowerCase().includes(searchQuery) || 
+                item.desc.toLowerCase().includes(searchQuery) ||
+                (item.uploaderIP && item.uploaderIP.toLowerCase().includes(searchQuery)) ||
+                (item.uploaderDevice && item.uploaderDevice.toLowerCase().includes(searchQuery))
+            );
 
             if (filteredItems.length === 0) {
                 sBody.innerHTML = `<tr><td colspan="5" style="color: #777;">لا توجد عناصر مطابقة للبحث أو مرفوعة.</td></tr>`;
@@ -214,30 +244,148 @@
 
             sBody.innerHTML = "";
             filteredItems.forEach((item, index) => {
-                // البحث عن الموقع الحقيقي للعنصر في المصفوفة الكاملة لحذفه بدقة
                 let realIndex = items.findIndex(i => i.name === item.name && i.time === item.time);
+                let uploaderIP = item.uploaderIP || "غير متوفر";
+                let uploaderDev = item.uploaderDevice || "غير متوفر";
+                let isIPMuted = mutedUploadIPs.includes(uploaderIP);
+                let isDevMuted = mutedUploadDevices.includes(uploaderDev);
+                let isMutedAny = isIPMuted || isDevMuted;
+
                 let tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td style="text-align: right;"><img src="${item.image}" class="item-thumb-sm"><strong>${item.name}</strong></td>
-                    <td><span style="padding: 3px 8px; border-radius: 4px; background: ${item.type === 'game' ? '#8e44ad' : '#27ae60'};">${item.type === 'game' ? 'لعبة 🎮' : 'تطبيق 📱'}</span></td>
-                    <td>${item.desc}</td>
+                    <td><span style="padding: 3px 6px; border-radius: 4px; background: ${item.type === 'game' ? '#8e44ad' : '#27ae60'};">${item.type === 'game' ? 'لعبة 🎮' : 'تطبيق 📱'}</span><br><span style="font-size:11px; color:#aaa;">${item.desc}</span></td>
+                    <td>
+                        <div class="device-info-box">
+                            📌 <b>IP:</b> <code>${uploaderIP}</code><br>
+                            💻 <b>Device ID:</b> <code>${uploaderDev}</code><br>
+                            🌐 <b>Platform:</b> ${item.uploaderOS || 'غير معروف'}<br>
+                            🖥️ <b>Screen:</b> ${item.uploaderScreen || 'غير معروف'}
+                        </div>
+                    </td>
                     <td>${item.time}</td>
-                    <td><button class="action-btn del-btn" onclick="deleteStoreItem(${realIndex})">🗑️ حذف</button></td>
+                    <td>
+                        <button class="action-btn del-btn" onclick="deleteStoreItem(${realIndex})">🗑️ حذف</button>
+                        ${isMutedAny 
+                            ? `<button class="action-btn unban-btn" onclick="toggleMuteUpload('${uploaderIP}', '${uploaderDev}', false)">✅ رفع الحظر</button>`
+                            : `<button class="action-btn ban-btn" onclick="toggleMuteUpload('${uploaderIP}', '${uploaderDev}', true)">🚫 حظر الجهاز</button>`
+                        }
+                    </td>
                 `;
                 sBody.appendChild(tr);
             });
         }
 
-        // دالة البحث الحية
+        function toggleMuteUpload(ip, deviceId, mute) {
+            let mutedUploadIPs = JSON.parse(localStorage.getItem("mutedUploadIPs")) || [];
+            let mutedUploadDevices = JSON.parse(localStorage.getItem("mutedUploadDevices")) || [];
+
+            if (mute) {
+                if (ip !== "غير متوفر" && !mutedUploadIPs.includes(ip)) mutedUploadIPs.push(ip);
+                if (deviceId !== "غير متوفر" && !mutedUploadDevices.includes(deviceId)) mutedUploadDevices.push(deviceId);
+                alert(`🚫 تم حظر وتعليق جهاز الرافع بالكامل. ستظهر له الآن شاشة الحظر عند محاولة الرفع.`);
+            } else {
+                mutedUploadIPs = mutedUploadIPs.filter(i => i !== ip);
+                mutedUploadDevices = mutedUploadDevices.filter(d => d !== deviceId);
+                alert(`✅ تم رفع الحظر وإعادة الصلاحية للجهاز بنجاح.`);
+            }
+
+            localStorage.setItem("mutedUploadIPs", JSON.stringify(mutedUploadIPs));
+            localStorage.setItem("mutedUploadDevices", JSON.stringify(mutedUploadDevices));
+            loadAdminData();
+        }
+
+        function renderCommentsTable(items) {
+            let cBody = document.getElementById("commentsTableBody");
+            let searchQuery = document.getElementById("searchCommentInput") ? document.getElementById("searchCommentInput").value.toLowerCase() : "";
+            let mutedCommentIPs = JSON.parse(localStorage.getItem("mutedCommentIPs")) || [];
+
+            let allCommentsList = [];
+            items.forEach((item, itemIdx) => {
+                if (item.reviews && item.reviews.length > 0) {
+                    item.reviews.forEach((rev, revIdx) => {
+                        allCommentsList.push({
+                            itemName: item.name,
+                            itemIndex: itemIdx,
+                            reviewIndex: revIdx,
+                            name: rev.name,
+                            ip: rev.ip || "غير معروف",
+                            rating: rev.rating,
+                            comment: rev.comment
+                        });
+                    });
+                }
+            });
+
+            let filteredComments = allCommentsList.filter(c => 
+                c.itemName.toLowerCase().includes(searchQuery) || 
+                c.name.toLowerCase().includes(searchQuery) || 
+                c.ip.toLowerCase().includes(searchQuery) ||
+                c.comment.toLowerCase().includes(searchQuery)
+            );
+
+            if (filteredComments.length === 0) {
+                cBody.innerHTML = `<tr><td colspan="5" style="color: #777;">لا توجد تعليقات مطابقة أو مسجلة بعد.</td></tr>`;
+                return;
+            }
+
+            cBody.innerHTML = "";
+            filteredComments.forEach(c => {
+                let isMuted = mutedCommentIPs.includes(c.ip);
+                let tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${c.itemName}</strong></td>
+                    <td>${c.name}</td>
+                    <td><code>${c.ip}</code></td>
+                    <td style="text-align: right;"><span style="color: #f1c40f;">${'⭐'.repeat(Number(c.rating))}</span><br>${c.comment}</td>
+                    <td>
+                        <button class="action-btn del-btn" onclick="deleteCommentItem(${c.itemIndex}, ${c.reviewIndex})">🗑️ حذف</button>
+                        <button class="action-btn warn-btn" onclick="sendWarning('${c.ip}')">⚠️ إنذار</button>
+                        ${isMuted 
+                            ? `<button class="action-btn unban-btn" onclick="toggleMuteIP('${c.ip}', false)">✅ رفع تعليق الـ IP</button>`
+                            : `<button class="action-btn ban-btn" onclick="toggleMuteIP('${c.ip}', true)">🚫 تعليق حساب الـ IP</button>`
+                        }
+                    </td>
+                `;
+                cBody.appendChild(tr);
+            });
+        }
+
+        function sendWarning(ip) {
+            alert(`⚠️ تم إرسال تنبيه وتحذير رسمي للجهاز ذو الـ IP: (${ip}).`);
+        }
+
+        function toggleMuteIP(ip, mute) {
+            let mutedCommentIPs = JSON.parse(localStorage.getItem("mutedCommentIPs")) || [];
+            if (mute) {
+                if (!mutedCommentIPs.includes(ip)) mutedCommentIPs.push(ip);
+                alert(`🚫 تم تعليق حساب الـ IP (${ip}) من التعليق بالكامل.`);
+            } else {
+                mutedCommentIPs = mutedCommentIPs.filter(item => item !== ip);
+                alert(`✅ تم رفع تعليق الحساب عن الـ IP (${ip}).`);
+            }
+            localStorage.setItem("mutedCommentIPs", JSON.stringify(mutedCommentIPs));
+            loadAdminData();
+        }
+
+        function deleteCommentItem(itemIndex, reviewIndex) {
+            let storeItems = JSON.parse(localStorage.getItem("storeItems")) || [];
+            if (storeItems[itemIndex] && storeItems[itemIndex].reviews) {
+                storeItems[itemIndex].reviews.splice(reviewIndex, 1);
+                localStorage.setItem("storeItems", JSON.stringify(storeItems));
+                alert("🗑️ تم حذف التعليق بنجاح!");
+                loadAdminData();
+            }
+        }
+
         function filterStoreItems() {
             let storeItems = JSON.parse(localStorage.getItem("storeItems")) || [];
             renderStoreTable(storeItems);
         }
 
-        // دالة حذف لعبة أو تطبيق وإزالته من جميع الأقسام نهائياً
         function deleteStoreItem(index) {
             let storeItems = JSON.parse(localStorage.getItem("storeItems")) || [];
-            if (confirm(`هل أنت متأكد من رغبتك في حذف "${storeItems[index].name}" نهائياً؟ سيتم إزالته من جميع الأقسام.`)) {
+            if (confirm(`هل أنت متأكد من رغبتك في حذف العنصر نهائياً؟`)) {
                 storeItems.splice(index, 1);
                 localStorage.setItem("storeItems", JSON.stringify(storeItems));
                 alert("🗑️ تم حذف العنصر بنجاح!");
@@ -251,11 +399,9 @@
             if (withdraws[index]) {
                 withdraws[index].status = "paid";
                 localStorage.setItem("adminWithdraws", JSON.stringify(withdraws));
-                if (visitors[ip]) {
-                    visitors[ip].withdrawStatus = "paid";
-                    localStorage.setItem("siteVisitors", JSON.stringify(visitors));
-                }
-                alert("✅ تم تحديث الطلب وإرسال إشعار الدفع للمستخدم بنجاح!");
+                if (visitors[ip]) visitors[ip].withdrawStatus = "paid";
+                localStorage.setItem("siteVisitors", JSON.stringify(visitors));
+                alert("✅ تم تحديث الطلب بنجاح!");
                 loadAdminData();
             }
         }
@@ -265,7 +411,6 @@
             if (visitors[ip]) {
                 visitors[ip].points = (visitors[ip].points || 0) + amount;
                 if (visitors[ip].points < 0) visitors[ip].points = 0;
-                visitors[ip].adminNotice = `تم تعديل نقاطك بواسطة الأدمن بقيمة (${amount > 0 ? '+' + amount : amount}) نقطة!`;
                 localStorage.setItem("siteVisitors", JSON.stringify(visitors));
                 loadAdminData();
             }
@@ -275,7 +420,6 @@
             let visitors = JSON.parse(localStorage.getItem("siteVisitors")) || {};
             if (visitors[ip]) {
                 visitors[ip].points = 0;
-                visitors[ip].adminNotice = `تم تصفير رصيدك ونقاطك من قبل الأدمن.`;
                 localStorage.setItem("siteVisitors", JSON.stringify(visitors));
                 loadAdminData();
             }

@@ -3,46 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Mods - قسم الألعاب</title>
+    <title>Galaxy Mods - الألعاب</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: center; }
-        header { position: fixed; top: 0; left: 0; width: 100%; background: #8e44ad; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding-top: 70px; padding-bottom: 70px; text-align: right; }
+        header { position: fixed; top: 0; left: 0; width: 100%; background: #e67e22; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; box-sizing: border-box; z-index: 1000; }
         .menu-btn { background: none; border: none; color: white; font-size: 26px; cursor: pointer; }
         .side-menu { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; right: 0; background-color: #2c3e50; overflow-x: hidden; transition: 0.3s; padding-top: 60px; text-align: right; }
         .side-menu a { padding: 12px 25px; text-decoration: none; font-size: 20px; color: white; display: block; transition: 0.2s; }
         .side-menu a:hover { background-color: #34495e; color: #f1c40f; }
         .side-menu .close-btn { position: absolute; top: 10px; left: 20px; font-size: 30px; background: none; border: none; color: white; cursor: pointer; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #2c3e50; display: flex; justify-content: space-around; align-items: center; padding: 10px 0; box-sizing: border-box; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; text-align: center; }
         .bottom-nav a { color: #bdc3c7; text-decoration: none; font-size: 11px; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }
         .bottom-nav a span.icon { font-size: 18px; margin-bottom: 2px; }
         .bottom-nav a:hover, .bottom-nav a.active { color: #f1c40f; }
 
-        .container { padding: 20px; max-width: 1000px; margin: auto; text-align: right; }
-        
-        .games-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
-        @media (max-width: 768px) {
-            .games-grid { grid-template-columns: repeat(2, 1fr); }
-        }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .search-box { margin-bottom: 15px; }
+        .search-box input { width: 100%; padding: 12px 15px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: white; outline: none; }
 
-        .game-card { background: white; padding: 12px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
-        .game-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .game-thumb { width: 100%; height: 90px; background: #ddd; border-radius: 6px; margin-bottom: 8px; object-fit: cover; }
-        .game-title { font-size: 13px; font-weight: bold; color: #333; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .game-desc { font-size: 11px; color: #666; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .download-btn { display: inline-block; background: #27ae60; color: white; padding: 5px 10px; font-size: 11px; text-decoration: none; border-radius: 4px; font-weight: bold; }
-        .download-btn:hover { background: #219653; }
-
-        .empty-notice { text-align: center; color: #777; font-size: 15px; margin: 40px 0; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-        .pagination { margin: 40px 0; display: flex; justify-content: center; gap: 6px; align-items: center; }
-        .pagination button { color: #333; padding: 8px 14px; text-decoration: none; background: white; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .pagination button.active, .pagination button:hover { background: #8e44ad; color: white; border-color: #8e44ad; }
-        .pagination button:disabled { background: #e2e8f0; color: #999; border-color: #ccc; cursor: not-allowed; }
+        .card { background: white; padding: 12px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; }
+        .card img { width: 70px; height: 70px; border-radius: 6px; object-fit: cover; margin-left: 15px; }
+        .card-info { flex-grow: 1; }
+        .card-info h3 { margin: 0 0 3px 0; color: #333; font-size: 17px; }
+        .card-rating { font-size: 12px; color: #f39c12; font-weight: bold; margin-bottom: 3px; }
+        .card-info p { margin: 0 0 8px 0; color: #666; font-size: 12px; }
+        .details-btn { background: #3498db; color: white; padding: 8px 14px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: bold; display: inline-block; }
+        .empty-msg { color: #777; margin-top: 40px; font-size: 15px; text-align: center; }
     </style>
 </head>
 <body>
-    <header><span>قسم الألعاب (Games)</span><button class="menu-btn" onclick="openMenu()">☰</button></header>
+    <header><span>🎮 قسم الألعاب</span><button class="menu-btn" onclick="openMenu()">☰</button></header>
     
     <div id="mySideMenu" class="side-menu">
         <button class="close-btn" onclick="closeMenu()">&times;</button>
@@ -55,11 +46,10 @@
     </div>
 
     <div class="container">
-        <h2>أحدث الألعاب والمودات المعدلة</h2>
-        <p>تصفح الألعاب المرفوعة (6 عناصر في كل صفحة).</p>
-        
-        <div class="games-grid" id="gamesGrid"></div>
-        <div class="pagination" id="paginationBox"></div>
+        <div class="search-box">
+            <input type="text" id="searchGameInput" placeholder="🔍 ابحث في الألعاب..." onkeyup="filterGames()">
+        </div>
+        <div id="gamesContainer"></div>
     </div>
     
     <nav class="bottom-nav">
@@ -74,68 +64,41 @@
         function openMenu() { document.getElementById("mySideMenu").style.width = "250px"; }
         function closeMenu() { document.getElementById("mySideMenu").style.width = "0"; }
 
-        let itemsPerPage = 6; // الحد الأقصى 6 مربعات في الصفحة الواحدة
-        let currentPage = 1;
+        let allItems = JSON.parse(localStorage.getItem("storeItems")) || [];
+        let games = allItems.map((item, index) => ({ ...item, originalIndex: index })).filter(item => item.type === 'game');
 
-        function loadPaginatedGames() {
-            let items = JSON.parse(localStorage.getItem("storeItems")) || [];
-            let games = items.filter(item => item.type === "game");
+        function getAvg(reviews) {
+            if (!reviews || reviews.length === 0) return "5.0";
+            let sum = reviews.reduce((acc, r) => acc + Number(r.rating), 0);
+            return (sum / reviews.length).toFixed(1);
+        }
 
-            let grid = document.getElementById("gamesGrid");
-            let paginationBox = document.getElementById("paginationBox");
-
-            // إذا لم تكن هناك ألعاب مرفوعة، لا تعرض مربعات إطلاقاً
-            if (games.length === 0) {
-                grid.innerHTML = `<div class="empty-notice" style="grid-column: 1 / -1;">📭 لا توجد أي ألعاب مرفوعة حالياً. ارفع لعبتك الأولى من زر "رفع"!</div>`;
-                paginationBox.innerHTML = "";
-                return;
-            }
-
-            let totalPages = Math.ceil(games.length / itemsPerPage);
-            if (currentPage > totalPages) currentPage = totalPages || 1;
-
-            let startIndex = (currentPage - 1) * itemsPerPage;
-            let endIndex = startIndex + itemsPerPage;
-            let currentGames = games.slice(startIndex, endIndex);
-
-            let htmlContent = "";
-            currentGames.forEach(g => {
-                let thumbContent = g.image 
-                    ? `<img src="${g.image}" class="game-thumb" alt="صورة">` 
-                    : `<div class="game-thumb" style="display:flex; align-items:center; justify-content:center; color:#666; font-size:12px;">🎮 لعبة</div>`;
-                
-                htmlContent += `
-                    <div class="game-card">
-                        <div>
-                            ${thumbContent}
-                            <div class="game-title">${g.name}</div>
-                            <div class="game-desc">${g.desc}</div>
+        function renderGames(list) {
+            let container = document.getElementById("gamesContainer");
+            if (list.length === 0) {
+                container.innerHTML = '<p class="empty-msg">❌ لا توجد ألعاب مطابقة لبحثك.</p>';
+            } else {
+                container.innerHTML = list.map(game => `
+                    <div class="card">
+                        <img src="${game.image}">
+                        <div class="card-info">
+                            <h3>${game.name}</h3>
+                            <div class="card-rating">⭐ ${getAvg(game.reviews)}</div>
+                            <p>${game.desc}</p>
+                            <a href="download.html?id=${game.originalIndex}" class="details-btn">صفحة التحميل 📥</a>
                         </div>
-                        <a href="download.html" class="download-btn">تحميل</a>
                     </div>
-                `;
-            });
-            grid.innerHTML = htmlContent;
-
-            // بناء أزرار التنقل فقط إذا كان هناك أكثر من صفحة واحدة
-            let pnlHtml = "";
-            if (totalPages > 1) {
-                pnlHtml += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>« السابق</button>`;
-                for(let i = 1; i <= totalPages; i++) {
-                    pnlHtml += `<button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
-                }
-                pnlHtml += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>التالي »</button>`;
+                `).join('');
             }
-            paginationBox.innerHTML = pnlHtml;
         }
 
-        function changePage(page) {
-            currentPage = page;
-            loadPaginatedGames();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        renderGames(games);
 
-        loadPaginatedGames();
+        function filterGames() {
+            let query = document.getElementById("searchGameInput").value.toLowerCase().trim();
+            let filtered = games.filter(g => g.name.toLowerCase().includes(query) || g.desc.toLowerCase().includes(query));
+            renderGames(filtered);
+        }
     </script>
 </body>
 </html>
